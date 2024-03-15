@@ -25,7 +25,7 @@
 const { Buffer } = require('buffer');
 const typeSerializers = require('./type-serializers');
 const Bytecode = require('../../process/bytecode');
-
+const BIGNUMBER_JSON = require('json-bigint');
 /**
  * GraphSON2 writer.
  */
@@ -215,7 +215,7 @@ class GraphSON2Reader {
       }
       return obj[typeSerializers.valueKey];
     }
-    if (obj && typeof obj === 'object' && obj.constructor === Object) {
+    if (obj && typeof obj === 'object') {
       return this._deserializeObject(obj);
     }
     // Default (for boolean, number and other scalars)
@@ -223,7 +223,7 @@ class GraphSON2Reader {
   }
 
   readResponse(buffer) {
-    return this.read(JSON.parse(buffer.toString()));
+    return this.read(BIGNUMBER_JSON.parse(buffer.toString()));
   }
 
   _deserializeObject(obj) {
@@ -249,7 +249,7 @@ const graphSON2Deserializers = {
   'g:Traverser': typeSerializers.TraverserSerializer,
   'g:TraversalStrategy': typeSerializers.TraversalStrategySerializer,
   'g:Int32': typeSerializers.NumberSerializer,
-  'g:Int64': typeSerializers.NumberSerializer,
+  'g:Int64': typeSerializers.BigNumberSerializer,
   'g:Float': typeSerializers.NumberSerializer,
   'g:Double': typeSerializers.NumberSerializer,
   'g:Date': typeSerializers.DateSerializer,

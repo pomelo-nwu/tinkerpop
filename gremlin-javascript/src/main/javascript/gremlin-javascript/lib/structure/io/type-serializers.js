@@ -27,7 +27,7 @@ const ts = require('../../process/traversal-strategy');
 const Bytecode = require('../../process/bytecode');
 const g = require('../graph');
 const utils = require('../../utils');
-
+const BigNumber = require('bignumber.js');
 const valueKey = '@value';
 const typeKey = '@type';
 
@@ -83,6 +83,38 @@ class NumberSerializer extends TypeSerializer {
 
   canBeUsedFor(value) {
     return typeof value === 'number';
+  }
+}
+
+class BigNumberSerializer extends TypeSerializer {
+  serialize(item) {
+    if (isNaN(item)) {
+      return {
+        [typeKey]: 'g:Double',
+        [valueKey]: 'NaN',
+      };
+    } else if (item === Number.POSITIVE_INFINITY) {
+      return {
+        [typeKey]: 'g:Double',
+        [valueKey]: 'Infinity',
+      };
+    } else if (item === Number.NEGATIVE_INFINITY) {
+      return {
+        [typeKey]: 'g:Double',
+        [valueKey]: '-Infinity',
+      };
+    } else {
+      return item;
+    }
+  }
+
+  deserialize(obj) {
+    var val = obj[valueKey];
+    return val;
+  }
+
+  canBeUsedFor(value) {
+    return value instanceof BigNumber;
   }
 }
 
@@ -484,6 +516,7 @@ module.exports = {
   BulkSetSerializer,
   BytecodeSerializer,
   DateSerializer,
+  BigNumberSerializer,
   DirectionSerializer,
   EdgeSerializer,
   EnumSerializer,
